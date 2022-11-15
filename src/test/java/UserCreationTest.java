@@ -1,10 +1,11 @@
-import com.github.javafaker.Faker;
+import client.UserClientSteps;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import pojo.User;
 
 import static org.hamcrest.Matchers.*;
 

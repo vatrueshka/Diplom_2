@@ -1,23 +1,27 @@
+import client.OrderClient;
+import client.UserClientSteps;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import pojo.Ingredients;
+import pojo.User;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class CreateOrderTest {
+    public OrderClient orderClient;
+    String bearerToken;
     private User user;
     private UserClientSteps userClientSteps;
     private Ingredients ingredients;
-    public OrderClient orderClient;
-    String bearerToken;
 
-    // Создание рандомного пользователя и бургера
+    //Создание рандомного пользователя
     @Before
-    public void setUp(){
+    public void setUp() {
         user = User.getRandom();
         userClientSteps = new UserClientSteps();
         ingredients = Ingredients.getRandomBurger();
@@ -32,13 +36,13 @@ public class CreateOrderTest {
     @Test
     @DisplayName("Создание заказа. Зарегистрированный пользователь")
     @Description("Тест /api/orders")
-    public void orderCanBeCreatedRegisteredUser (){
+    public void orderCanBeCreatedRegisteredUser() {
         // Создание пользователя
         ValidatableResponse userResponse = userClientSteps.create(user);
         bearerToken = userResponse.extract().path("accessToken");
 
         // Создание заказа
-        ValidatableResponse orderResponse = orderClient.create(bearerToken,ingredients);
+        ValidatableResponse orderResponse = orderClient.create(bearerToken, ingredients);
         int orderNumber = orderResponse.extract().path("order.number"); // Получение номера созданного заказа
 
         // Проверка тела ответа запроса
@@ -50,7 +54,7 @@ public class CreateOrderTest {
     @Test
     @DisplayName("Создание заказа. Не зарегистрированный пользователь")
     @Description("Тест /api/orders")
-    public void orderCanBeCreatedNonRegisteredUser (){
+    public void orderCanBeCreatedNonRegisteredUser() {
         bearerToken = "";
 
         // Создание заказа
@@ -64,15 +68,15 @@ public class CreateOrderTest {
     }
 
     @Test
-    @DisplayName ("Создание заказа без ингредиентов")
+    @DisplayName("Создание заказа без ингредиентов")
     @Description("Тест /api/orders")
-    public void orderCanNotBeCreatedWithOutIngredients (){
+    public void orderCanNotBeCreatedWithOutIngredients() {
         // Создание пользователя
         ValidatableResponse userResponse = userClientSteps.create(user);
         bearerToken = userResponse.extract().path("accessToken");
 
         // Создание заказа без ингредиентов
-        ValidatableResponse orderResponse = orderClient.create(bearerToken,Ingredients.getNullIngredients());
+        ValidatableResponse orderResponse = orderClient.create(bearerToken, Ingredients.getNullIngredients());
 
         // Проверка тела ответа запроса
         orderResponse.assertThat().statusCode(400);
@@ -81,15 +85,15 @@ public class CreateOrderTest {
     }
 
     @Test
-    @DisplayName ("Создание заказа с невалидными ингредиентами")
+    @DisplayName("Создание заказа с невалидными ингредиентами")
     @Description("Тест /api/orders")
-    public void orderCanNotBeCreatedWithIncorrectIngredients (){
+    public void orderCanNotBeCreatedWithIncorrectIngredients() {
         // Создание пользователя
         ValidatableResponse userResponse = userClientSteps.create(user);
         bearerToken = userResponse.extract().path("accessToken");
 
         // Создание заказа
-        ValidatableResponse orderResponse = orderClient.create(bearerToken,Ingredients.getIncorrectIngredients());
+        ValidatableResponse orderResponse = orderClient.create(bearerToken, Ingredients.getIncorrectIngredients());
 
         // Проверка тела ответа запроса
         orderResponse.assertThat().statusCode(500);

@@ -1,27 +1,33 @@
+package pojo;
+
+import client.RestAssuredClient;
 import com.github.javafaker.Faker;
 import io.restassured.response.ValidatableResponse;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static io.restassured.RestAssured.given;
-import static org.apache.commons.lang3.RandomUtils.nextInt;
 
-public class Ingredients extends RestAssuredClient{
-    private static final String INGRIDIENTS_PATH = "api/ingredients";
+public class Ingredients extends RestAssuredClient {
+    private static final String INGREDIENTS_PATH = "api/ingredients";
+    private static Faker faker = new Faker();
 
-    public ArrayList<Object> ingredients;
-    public static Faker faker = new Faker();
+    private ArrayList<Object> ingredients;
 
-    public Ingredients(ArrayList<Object> ingredients){
+    public Ingredients(ArrayList<Object> ingredients) {
         this.ingredients = ingredients;
-
     }
 
-    public static Ingredients getRandomBurger(){
+    public Ingredients() {
+    }
+
+    public static Ingredients getRandomBurger() {
         //Запрос данных об ингредиентах
         ValidatableResponse response = given()
                 .spec(getBaseSpec())
                 .when()
-                .get(INGRIDIENTS_PATH)
+                .get(INGREDIENTS_PATH)
                 .then()
                 .statusCode(200);
 
@@ -43,7 +49,7 @@ public class Ingredients extends RestAssuredClient{
         ingredients.add(mainIngredients.get(mainIndex));
         ingredients.add(sauceIngredients.get(sauceIndex));
 
-        return new Ingredients (ingredients);
+        return new Ingredients(ingredients);
     }
 
     public static Ingredients getNullIngredients() {
@@ -55,7 +61,15 @@ public class Ingredients extends RestAssuredClient{
         ArrayList<Object> ingredients = new ArrayList<>();
         ingredients.add(faker.internet().uuid());
         ingredients.add(faker.internet().uuid());
-//        ingredients.add(faker.internet().uuid());
         return new Ingredients(ingredients);
     }
+
+    public ArrayList<Object> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(ArrayList<Object> ingredients) {
+        this.ingredients = ingredients;
+    }
+
 }

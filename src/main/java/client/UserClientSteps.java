@@ -1,5 +1,9 @@
+package client;
+
 import io.qameta.allure.Step;
 import io.restassured.response.ValidatableResponse;
+import pojo.User;
+import pojo.UserCredentials;
 
 import static io.restassured.RestAssured.given;
 

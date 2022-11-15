@@ -1,28 +1,31 @@
+import client.OrderClient;
+import client.UserClientSteps;
 import io.qameta.allure.Description;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import pojo.Ingredients;
+import pojo.User;
+import pojo.UserCredentials;
+
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.*;
 
 public class GetOrdersIndividualUsers {
     private User user;
     private UserClientSteps userClientSteps;
-    private Ingredients ingredients;
     private OrderClient orderClient;
     private String bearerToken;
 
     // Создание рандомного пользователя и бургера
     @Before
-    public void setUp(){
+    public void setUp() {
         user = User.getRandom();
         userClientSteps = new UserClientSteps();
-        ingredients = Ingredients.getRandomBurger();
         orderClient = new OrderClient();
     }
 
@@ -33,7 +36,7 @@ public class GetOrdersIndividualUsers {
 
     @Test
     @Description("Получение списка заказов авторизованного пользователя")
-    public void orderUserInfoCanBeGetAuthUser (){
+    public void orderUserInfoCanBeGetAuthUser() {
         // Создание пользователя
         userClientSteps.create(user);
         ValidatableResponse login = userClientSteps.login(UserCredentials.from(user)); // Авторизация пользователя
@@ -52,7 +55,7 @@ public class GetOrdersIndividualUsers {
 
     @Test
     @Description("Получение списка заказов не авторизованного пользователя")
-    public void orderUserInfoCantBeGetNonAuthUser (){
+    public void orderUserInfoCantBeGetNonAuthUser() {
         bearerToken = "";
 
         // Информация о заказах пользователя

@@ -1,22 +1,24 @@
+import client.UserClientSteps;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import pojo.User;
+import pojo.UserCredentials;
 
 import static org.hamcrest.Matchers.equalTo;
 
 public class ChangeDataTest {
 
-    private User user1;
+    private User user;
     private String bearerToken;
     private UserClientSteps userClientSteps;
 
-
     @Before
     public void setUp() {
-        user1 = User.getRandom();
+        user = User.getRandom();
         userClientSteps = new UserClientSteps();
     }
 
@@ -25,12 +27,13 @@ public class ChangeDataTest {
         userClientSteps.delete(bearerToken);
     }
 
+
     @Test
     @DisplayName("Редактирование данных у авторизованного пользователя")
     @Description("Изменение данных пользователя. Смена пароля")
     public void userInfoCanBeChangePasswordTest() {
-        userClientSteps.create(user1); // Создание пользователя
-        ValidatableResponse login = userClientSteps.login(UserCredentials.from(user1)); // Авторизация пользователя
+        userClientSteps.create(user); // Создание пользователя
+        ValidatableResponse login = userClientSteps.login(UserCredentials.from(user)); // Авторизация пользователя
         bearerToken = login.extract().path("accessToken"); // сохраняем токен
 
         // Изменение информации о пользователе
@@ -45,8 +48,8 @@ public class ChangeDataTest {
     @DisplayName("Редактирование данных у авторизованного пользователя")
     @Description("Изменение данных пользователя. Смена email")
     public void userInfoCanBeChangeEmailTest() {
-        userClientSteps.create(user1); // Создание пользователя
-        ValidatableResponse login = userClientSteps.login(UserCredentials.from(user1)); // Авторизация пользователя
+        userClientSteps.create(user); // Создание пользователя
+        ValidatableResponse login = userClientSteps.login(UserCredentials.from(user)); // Авторизация пользователя
         bearerToken = login.extract().path("accessToken"); // сохраняем токен
 
         // Изменение информации о пользователе
@@ -62,23 +65,23 @@ public class ChangeDataTest {
     @DisplayName("Редактирование данных на email, который уже есть в базе, у авторизованного пользователя")
     @Description("Изменение данных пользователя. Одинаковый email")
     public void userInfoCanNotBeChangeWithSameEmailTest() {
-        userClientSteps.create(user1); // Создание первого пользователя
+        userClientSteps.create(user); // Создание первого юзера
 
-        User user2 = User.getRandom();
-        userClientSteps.create(user2); // Создание второго пользователя
+        User changeEmailTestUser = User.getRandom();
+        userClientSteps.create(changeEmailTestUser); // Создание второго юзера
 
-        ValidatableResponse login = userClientSteps.login(UserCredentials.from(user1)); // Авторизация пользователя
+        ValidatableResponse login = userClientSteps.login(UserCredentials.from(user)); // Авторизация пользователя
         bearerToken = login.extract().path("accessToken"); // сохраняем токен
 
         // Изменение информации о пользователе
-        ValidatableResponse info = userClientSteps.userInfoChange(bearerToken, UserCredentials.getUserWithEmail(user2));
+        ValidatableResponse info = userClientSteps.userInfoChange(bearerToken, UserCredentials.from(changeEmailTestUser));
 
         // Проверка тела сообщения
         info.assertThat().statusCode(403);
         info.assertThat().body("success", equalTo(false));
         info.assertThat().body("message", equalTo("User with such email already exists"));
 
-        ValidatableResponse loginAsUser2 = userClientSteps.login(UserCredentials.from(user2)); // Получение токена второго юзера
+        ValidatableResponse loginAsUser2 = userClientSteps.login(UserCredentials.from(changeEmailTestUser)); // Получение токена второго юзера
         userClientSteps.delete(loginAsUser2.extract().path("accessToken")); //Удаление второго юзера
     }
 

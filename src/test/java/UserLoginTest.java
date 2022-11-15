@@ -1,3 +1,4 @@
+import client.UserClientSteps;
 import com.github.javafaker.Faker;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
@@ -5,6 +6,8 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import pojo.User;
+import pojo.UserCredentials;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -46,7 +49,7 @@ public class UserLoginTest {
     @Description("Тест /api/auth/login")
     public void checkUserLoginWithoutUserName() {
 
-        validatableResponse = userClientSteps.login(new UserCredentials(null, user.password));
+        validatableResponse = userClientSteps.login(new UserCredentials(null, user.getPassword()));
 
         validatableResponse.assertThat().statusCode(401);
         validatableResponse.assertThat().body("success", equalTo(false));
@@ -59,7 +62,7 @@ public class UserLoginTest {
     public void checkUserLoginNull() {
 
 
-        validatableResponse = userClientSteps.login(new UserCredentials(user.email, null));
+        validatableResponse = userClientSteps.login(new UserCredentials(user.getEmail(), null));
 
         validatableResponse.assertThat().statusCode(401);
         validatableResponse.assertThat().body("message", equalTo("email or password are incorrect"));
@@ -72,7 +75,7 @@ public class UserLoginTest {
 
         String incorrectEmail = faker.internet().emailAddress();
 
-        validatableResponse = userClientSteps.login(new UserCredentials(incorrectEmail, user.password));
+        validatableResponse = userClientSteps.login(new UserCredentials(incorrectEmail, user.getPassword()));
 
         validatableResponse.assertThat().statusCode(401);
         validatableResponse.assertThat().body("success", equalTo(false));
@@ -86,7 +89,7 @@ public class UserLoginTest {
 
         String incorrectPassword = faker.internet().password();
 
-        validatableResponse = userClientSteps.login(new UserCredentials(user.email, incorrectPassword));
+        validatableResponse = userClientSteps.login(new UserCredentials(user.getEmail(), incorrectPassword));
 
         validatableResponse.assertThat().statusCode(401);
         validatableResponse.assertThat().body("message", equalTo("email or password are incorrect"));

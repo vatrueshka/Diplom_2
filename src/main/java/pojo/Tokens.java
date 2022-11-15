@@ -1,6 +1,17 @@
+package pojo;
+
 public class Tokens {
-    public static String accessToken;
-    public static String refreshToken;
+
+    private static String accessToken;
+    private static String refreshToken;
+
+    public Tokens(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
+
+    public Tokens() {
+    }
 
     public static String getAccessToken() {
         return accessToken;
